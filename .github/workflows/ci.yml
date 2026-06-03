@@ -10,7 +10,7 @@ on:
 env:
   CACHE_ENABLED: "true"
   EXECUTION_MODE: "sequential"
-  EXPERIMENT_VARIATION: "exp04-failing-risk-test"
+  EXPERIMENT_VARIATION: "exp05-risk-test-fixed"
 
 jobs:
   install:

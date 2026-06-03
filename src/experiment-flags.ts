@@ -1,8 +1,8 @@
 export const experimentFlags = {
-  variation: "exp04-failing-risk-test",
+  variation: "exp05-risk-test-fixed",
   cacheEnabled: true,
   executionMode: "sequential",
-  expectedCriticalRisk: "high",
+  expectedCriticalRisk: "critical",
   slowTriageDelayMs: 0,
   generatedRiskCases: 10,
   lintProbe: "stable"
