@@ -1,3 +1,4 @@
 export function lintProbeStatus(): string {
-  return "stable";
+  const unusedProbe = "this intentionally breaks eslint";
+  return "lint_failure";
 }

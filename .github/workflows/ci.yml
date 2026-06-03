@@ -10,7 +10,7 @@ on:
 env:
   CACHE_ENABLED: "true"
   EXECUTION_MODE: "sequential"
-  EXPERIMENT_VARIATION: "exp10-sequential-jobs"
+  EXPERIMENT_VARIATION: "exp11-lint-failure"
 
 jobs:
   install:
