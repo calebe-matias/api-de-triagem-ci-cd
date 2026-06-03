@@ -1,8 +1,8 @@
 export const experimentFlags = {
-  variation: "exp03-cache-enabled",
+  variation: "exp04-failing-risk-test",
   cacheEnabled: true,
   executionMode: "sequential",
-  expectedCriticalRisk: "critical",
+  expectedCriticalRisk: "high",
   slowTriageDelayMs: 0,
   generatedRiskCases: 10,
   lintProbe: "stable"
