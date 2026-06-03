@@ -1,6 +1,6 @@
 export const experimentFlags = {
-  variation: "exp01-baseline",
-  cacheEnabled: true,
+  variation: "exp02-cache-disabled",
+  cacheEnabled: false,
   executionMode: "sequential",
   expectedCriticalRisk: "critical",
   slowTriageDelayMs: 0,
