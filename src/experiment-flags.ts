@@ -1,9 +1,9 @@
 export const experimentFlags = {
-  variation: "exp11-lint-failure",
+  variation: "exp12-stable-final",
   cacheEnabled: true,
   executionMode: "sequential",
   expectedCriticalRisk: "critical",
   slowTriageDelayMs: 0,
   generatedRiskCases: 146,
-  lintProbe: "lint_failure"
+  lintProbe: "stable"
 } as const;
