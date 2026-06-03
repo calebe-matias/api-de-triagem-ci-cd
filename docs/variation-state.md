@@ -8,3 +8,4 @@ Historico gerado por `npm run experiment:variation -- <expXX>`.
 - 2026-06-03T16:47:19.189Z - exp05-risk-test-fixed: cache=true, mode=sequential, tests=10, slow=0, lint=stable
 - 2026-06-03T16:49:10.159Z - exp06-slow-test: cache=true, mode=sequential, tests=10, slow=2500, lint=stable
 - 2026-06-03T16:51:01.081Z - exp07-slow-test-removed: cache=true, mode=sequential, tests=10, slow=0, lint=stable
+- 2026-06-03T16:52:52.245Z - exp08-more-tests: cache=true, mode=sequential, tests=146, slow=0, lint=stable
