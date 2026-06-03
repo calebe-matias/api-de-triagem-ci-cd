@@ -3,10 +3,6 @@ dist/
 coverage/
 reports/*.json
 reports/*.xml
-reports/charts/*.png
-metrics/*.csv
-metrics/*.json
 .tmp-metrics/
 .env
 npm-debug.log*
-

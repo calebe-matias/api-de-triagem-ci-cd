@@ -46,30 +46,13 @@ function rect(image, x, y, w, h, color) {
 }
 
 function line(image, x0, y0, x1, y1, color) {
-  const dx = Math.abs(x1 - x0);
-  const dy = Math.abs(y1 - y0);
-  const sx = x0 < x1 ? 1 : -1;
-  const sy = y0 < y1 ? 1 : -1;
-  let err = dx - dy;
-  let x = Math.round(x0);
-  let y = Math.round(y0);
+  const steps = Math.max(Math.abs(Math.round(x1 - x0)), Math.abs(Math.round(y1 - y0)), 1);
 
-  while (true) {
+  for (let step = 0; step <= steps; step += 1) {
+    const ratio = step / steps;
+    const x = x0 + (x1 - x0) * ratio;
+    const y = y0 + (y1 - y0) * ratio;
     rect(image, x - 1, y - 1, 3, 3, color);
-
-    if (x === Math.round(x1) && y === Math.round(y1)) {
-      break;
-    }
-
-    const e2 = 2 * err;
-    if (e2 > -dy) {
-      err -= dy;
-      x += sx;
-    }
-    if (e2 < dx) {
-      err += dx;
-      y += sy;
-    }
   }
 }
 
@@ -187,4 +170,3 @@ save(chartWorkflowDuration(runs), "reports/charts/workflow-duration.png");
 save(chartJobDuration(rows), "reports/charts/job-duration.png");
 save(chartSuccessFailure(runs), "reports/charts/success-failure-rate.png");
 save(chartTestsVsDuration(runs), "reports/charts/tests-vs-duration.png");
-
