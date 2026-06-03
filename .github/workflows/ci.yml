@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
 
 env:
-  CACHE_ENABLED: "false"
+  CACHE_ENABLED: "true"
   EXECUTION_MODE: "sequential"
-  EXPERIMENT_VARIATION: "exp02-cache-disabled"
+  EXPERIMENT_VARIATION: "exp03-cache-enabled"
 
 jobs:
   install:
