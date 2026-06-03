@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CACHE_ENABLED: "true"
+  EXECUTION_MODE: "sequential"
+  EXPERIMENT_VARIATION: "exp01-baseline"
+
+jobs:
+  install:
+    name: install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node with npm cache
+        if: env.CACHE_ENABLED == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Node without cache
+        if: env.CACHE_ENABLED != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+  quality:
+    name: lint and typecheck
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node with npm cache
+        if: env.CACHE_ENABLED == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Node without cache
+        if: env.CACHE_ENABLED != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+  test:
+    name: automated tests
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node with npm cache
+        if: env.CACHE_ENABLED == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Node without cache
+        if: env.CACHE_ENABLED != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        shell: bash
+        run: |
+          set +e
+          npm run test:ci
+          TEST_STATUS=$?
+          npm run test:summary
+          exit $TEST_STATUS
+
+      - name: Write pipeline context
+        if: always()
+        run: npm run pipeline:context
+
+      - name: Upload pipeline results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-results
+          path: |
+            reports/
+            coverage/
+          retention-days: 14
