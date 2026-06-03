@@ -9,8 +9,8 @@ on:
 
 env:
   CACHE_ENABLED: "true"
-  EXECUTION_MODE: "sequential"
-  EXPERIMENT_VARIATION: "exp08-more-tests"
+  EXECUTION_MODE: "parallel"
+  EXPERIMENT_VARIATION: "exp09-parallel-jobs"
 
 jobs:
   install:
@@ -66,7 +66,7 @@ jobs:
 
   test:
     name: automated tests
-    needs: quality
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

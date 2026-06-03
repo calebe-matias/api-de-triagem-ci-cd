@@ -1,7 +1,7 @@
 export const experimentFlags = {
-  variation: "exp08-more-tests",
+  variation: "exp09-parallel-jobs",
   cacheEnabled: true,
-  executionMode: "sequential",
+  executionMode: "parallel",
   expectedCriticalRisk: "critical",
   slowTriageDelayMs: 0,
   generatedRiskCases: 146,
