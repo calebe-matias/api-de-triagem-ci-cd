@@ -1,9 +1,9 @@
 export const experimentFlags = {
-  variation: "exp06-slow-test",
+  variation: "exp07-slow-test-removed",
   cacheEnabled: true,
   executionMode: "sequential",
   expectedCriticalRisk: "critical",
-  slowTriageDelayMs: 2500,
+  slowTriageDelayMs: 0,
   generatedRiskCases: 10,
   lintProbe: "stable"
 } as const;

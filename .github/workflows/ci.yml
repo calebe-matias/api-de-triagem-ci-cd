@@ -10,7 +10,7 @@ on:
 env:
   CACHE_ENABLED: "true"
   EXECUTION_MODE: "sequential"
-  EXPERIMENT_VARIATION: "exp06-slow-test"
+  EXPERIMENT_VARIATION: "exp07-slow-test-removed"
 
 jobs:
   install:
