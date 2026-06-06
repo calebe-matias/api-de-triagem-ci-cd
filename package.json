@@ -1,7 +1,7 @@
 {
   "name": "api-de-triagem-ci-cd",
   "version": "1.0.0",
-  "description": "API de triagem e acompanhamento de atendimentos para experimento de metricas CI/CD.",
+  "description": "API de triagem e acompanhamento de atendimentos para experimento de métricas CI/CD.",
   "type": "module",
   "private": false,
   "scripts": {
@@ -39,4 +39,3 @@
     "node": ">=20.0.0"
   }
 }
-

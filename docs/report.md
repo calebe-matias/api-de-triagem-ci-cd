@@ -1,19 +1,19 @@
-# Relatorio Tecnico: Analise de Pipeline CI/CD
+# Relatório Técnico: Análise de Pipeline CI/CD
 
 Aluno: Calebe Matias
 
-## Repositorio
+## Repositório
 
-- Repositorio: https://github.com/calebe-matias/api-de-triagem-ci-cd
+- Repositório: https://github.com/calebe-matias/api-de-triagem-ci-cd
 - Workflow YAML: https://github.com/calebe-matias/api-de-triagem-ci-cd/blob/main/.github/workflows/ci.yml
 - Script de coleta: `scripts/collect-metrics.mjs`
 - Base gerada: `metrics/runs.csv` e `metrics/runs.json`
-- Graficos: `reports/charts/`
-- Total de execucoes analisadas: 12
+- Gráficos: `reports/charts/`
+- Total de execuções analisadas: 12
 
-## Evidencias reais
+## Evidências reais
 
-| Exp | Run ID | Status | Duracao workflow | Testes | Falhas | Commit | Link |
+| Exp | Run ID | Status | Duração workflow | Testes | Falhas | Commit | Link |
 | --- | --- | --- | ---: | ---: | ---: | --- | --- |
 | exp01 | `26899090948` | success | 52s | 24 | 0 | `c4429a1` | https://github.com/calebe-matias/api-de-triagem-ci-cd/actions/runs/26899090948 |
 | exp02 | `26899169043` | success | 58s | 24 | 0 | `4042cd0` | https://github.com/calebe-matias/api-de-triagem-ci-cd/actions/runs/26899169043 |
@@ -28,62 +28,62 @@ Aluno: Calebe Matias
 | exp11 | `26900524758` | failure | 37s | 0 | 0 | `382e9ba` | https://github.com/calebe-matias/api-de-triagem-ci-cd/actions/runs/26900524758 |
 | exp12 | `26900622285` | success | 59s | 160 | 0 | `d53de68` | https://github.com/calebe-matias/api-de-triagem-ci-cd/actions/runs/26900622285 |
 
-## Hipotese inicial
+## Hipótese inicial
 
-O cache de dependencias deveria reduzir o tempo de instalacao, testes lentos e maior volume de casos deveriam aumentar a duracao do job de testes, e a execucao paralela deveria reduzir o tempo total quando lint/typecheck e testes fossem independentes.
+O cache de dependências deveria reduzir o tempo de instalação, testes lentos e maior volume de casos deveriam aumentar a duração do job de testes, e a execução paralela deveria reduzir o tempo total quando lint/typecheck e testes fossem independentes.
 
-## Graficos gerados
+## Gráficos gerados
 
 - `reports/charts/workflow-duration.png`
 - `reports/charts/job-duration.png`
 - `reports/charts/success-failure-rate.png`
 - `reports/charts/tests-vs-duration.png`
 
-## Analise
+## Análise
 
 ### Qual etapa mais contribuiu para o tempo total do pipeline?
 
-As medias por job foram: `lint and typecheck` com 16,42s, `automated tests` com 14,33s e `install dependencies` com 14,17s. A maior contribuicao media veio de lint/typecheck, mas os tres jobs ficaram proximos porque cada job reinstala dependencias para manter isolamento.
+As médias por job foram: `lint and typecheck` com 16,42s, `automated tests` com 14,33s e `install dependencies` com 14,17s. A maior contribuição média veio de lint/typecheck, mas os três jobs ficaram próximos porque cada job reinstala dependências para manter isolamento.
 
-### Houve diferenca significativa entre execucoes com e sem cache?
+### Houve diferença significativa entre execuções com e sem cache?
 
-A comparacao inicial foi: exp01 com cache em 52s, exp02 sem cache em 58s e exp03 com cache em 54s. Houve melhora pequena, de cerca de 4 a 6 segundos, mas nao grande o suficiente para afirmar ganho forte com apenas uma repeticao sem cache.
+A comparação inicial foi: exp01 com cache em 52s, exp02 sem cache em 58s e exp03 com cache em 54s. Houve melhora pequena, de cerca de 4 a 6 segundos, mas não grande o suficiente para afirmar ganho forte com apenas uma repetição sem cache.
 
-### O paralelismo reduziu o tempo total? Em que condicoes?
+### O paralelismo reduziu o tempo total? Em que condições?
 
 Sim. Com 160 testes, exp08 sequencial levou 57s, exp09 paralelo levou 37s e exp10 sequencial levou 56s. O paralelismo reduziu cerca de 20s quando `quality` e `test` puderam rodar em paralelo depois do job `install`.
 
 ### Quais falhas foram mais frequentes?
 
-Houve duas falhas planejadas: uma falha de teste em exp04 e uma falha de lint em exp11. Como cada tipo ocorreu uma vez, nao houve predominancia estatistica; o experimento mostra apenas que o pipeline diferencia falha funcional de falha estatica.
+Houve duas falhas planejadas: uma falha de teste em exp04 e uma falha de lint em exp11. Como cada tipo ocorreu uma vez, não houve predominância estatística; o experimento mostra apenas que o pipeline diferencia falha funcional de falha estática.
 
-### O pipeline fornece feedback rapido o suficiente para o desenvolvedor?
+### O pipeline fornece feedback rápido o suficiente para o desenvolvedor?
 
-Sim para este escopo. As execucoes bem-sucedidas ficaram em media em 54,6s. A falha de lint em exp11 retornou em 37s, o que e um feedback rapido para um erro simples de qualidade.
+Sim para este escopo. As execuções bem-sucedidas ficaram em média em 54,6s. A falha de lint em exp11 retornou em 37s, o que é um feedback rápido para um erro simples de qualidade.
 
 ### Que melhorias poderiam ser feitas no pipeline?
 
-Separar instalacao compartilhada de dependencias, reaproveitar artefatos entre jobs, aumentar repeticoes para cache ligado/desligado, adicionar labels de falha no artefato e gerar graficos com rotulos textuais mais ricos.
+Separar instalação compartilhada de dependências, reaproveitar artefatos entre jobs, aumentar repetições para cache ligado/desligado, adicionar labels de falha no artefato e gerar gráficos com rótulos textuais mais ricos.
 
-### Quais limitacoes existem nos dados coletados?
+### Quais limitações existem nos dados coletados?
 
-O tamanho da amostra e pequeno, o ambiente GitHub-hosted varia entre execucoes, cache foi comparado com poucas repeticoes, e a falha de lint nao gera artefato de teste porque o job de testes e pulado no modo sequencial. Alem disso, os tempos incluem overhead do runner, checkout e setup-node.
+O tamanho da amostra é pequeno, o ambiente GitHub-hosted varia entre execuções, cache foi comparado com poucas repetições, e a falha de lint não gera artefato de teste porque o job de testes é pulado no modo sequencial. Além disso, os tempos incluem overhead do runner, checkout e setup-node.
 
-### Como essa analise poderia apoiar decisoes de engenharia?
+### Como essa análise poderia apoiar decisões de engenharia?
 
-Os dados ajudam a decidir quando paralelizar jobs, se o cache compensa para um projeto pequeno, quais etapas merecem otimizacao e se o feedback do pipeline esta dentro de um tempo aceitavel para desenvolvimento diario.
+Os dados ajudam a decidir quando paralelizar jobs, se o cache compensa para um projeto pequeno, quais etapas merecem otimização e se o feedback do pipeline está dentro de um tempo aceitável para desenvolvimento diário.
 
 ## Resultados inesperados
 
-1. O teste lento de 2,5s em exp06 nao aumentou o tempo total em relacao a exp05; exp05 levou 58s e exp06 levou 55s. O overhead e a variacao do runner foram maiores que o atraso artificial.
-2. A execucao exp07, sem teste lento, levou 60s, maior que exp06. Isso reforca que pequenas diferencas locais de teste podem ser mascaradas por variacao do ambiente do GitHub Actions.
-3. O aumento de 24 para 160 testes em exp08 tambem nao elevou muito a duracao total, porque os testes gerados sao baratos e o custo principal esta em setup/install/lint.
+1. O teste lento de 2,5s em exp06 não aumentou o tempo total em relação a exp05; exp05 levou 58s e exp06 levou 55s. O overhead e a variação do runner foram maiores que o atraso artificial.
+2. A execução exp07, sem teste lento, levou 60s, maior que exp06. Isso reforça que pequenas diferenças locais de teste podem ser mascaradas por variação do ambiente do GitHub Actions.
+3. O aumento de 24 para 160 testes em exp08 também não elevou muito a duração total, porque os testes gerados são baratos e o custo principal está em setup/install/lint.
 
-## Comparacao entre hipotese e resultado observado
+## Comparação entre hipótese e resultado observado
 
-A hipotese sobre paralelismo foi confirmada: exp09 reduziu o tempo total para 37s contra 57s/56s nas execucoes sequenciais com 160 testes. A hipotese sobre cache foi apenas parcialmente confirmada, com ganho pequeno. A hipotese sobre teste lento e volume de testes nao apareceu claramente nos tempos totais, pois o pipeline e dominado por overhead de jobs e instalacao.
+A hipótese sobre paralelismo foi confirmada: exp09 reduziu o tempo total para 37s contra 57s/56s nas execuções sequenciais com 160 testes. A hipótese sobre cache foi apenas parcialmente confirmada, com ganho pequeno. A hipótese sobre teste lento e volume de testes não apareceu claramente nos tempos totais, pois o pipeline é dominado por overhead de jobs e instalação.
 
-## Reproducao
+## Reprodução
 
 ```bash
 npm ci
@@ -93,4 +93,3 @@ npm run test:ci
 npm run metrics:collect -- --owner calebe-matias --repo api-de-triagem-ci-cd
 npm run charts
 ```
-
