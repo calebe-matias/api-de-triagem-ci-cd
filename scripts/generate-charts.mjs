@@ -67,6 +67,19 @@ const font = {
   "X": ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
   "Y": ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
   "Z": ["11111", "00001", "00010", "00100", "01000", "10000", "11111"]
+  ,
+  "Á": ["00100", "01110", "10001", "11111", "10001", "10001", "10001"],
+  "Â": ["00100", "01010", "01110", "10001", "11111", "10001", "10001"],
+  "Ã": ["01010", "10100", "01110", "10001", "11111", "10001", "10001"],
+  "À": ["01000", "00100", "01110", "10001", "11111", "10001", "10001"],
+  "É": ["00100", "11111", "10000", "11110", "10000", "10000", "11111"],
+  "Ê": ["00100", "01010", "11111", "10000", "11110", "10000", "11111"],
+  "Í": ["00100", "01110", "00100", "00100", "00100", "00100", "01110"],
+  "Ó": ["00100", "01110", "10001", "10001", "10001", "10001", "01110"],
+  "Ô": ["00100", "01010", "01110", "10001", "10001", "10001", "01110"],
+  "Õ": ["01010", "10100", "01110", "10001", "10001", "10001", "01110"],
+  "Ú": ["00100", "10001", "10001", "10001", "10001", "10001", "01110"],
+  "Ç": ["01111", "10000", "10000", "10000", "10000", "01111", "00100"]
 };
 
 function readMetrics() {
@@ -232,18 +245,18 @@ function niceMax(values, minMax = 10) {
 }
 
 function chartWorkflowDuration(runs) {
-  const image = newCanvas("Workflow duration by run", "Total GitHub Actions time in seconds for each experiment run");
+  const image = newCanvas("Duração do workflow por execução", "Tempo total do GitHub Actions em segundos por execução");
   const maxY = niceMax(runs.map((run) => Number(run.workflow_duration)));
   const bounds = chartBounds();
   const slot = bounds.chartWidth / runs.length;
   const barWidth = Math.min(62, slot * 0.58);
 
-  drawAxes(image, maxY, "SECONDS", "EXPERIMENT RUN");
+  drawAxes(image, maxY, "SEGUNDOS", "EXECUÇÃO DO EXPERIMENTO");
   drawLegend(
     image,
     [
-      { label: "SUCCESS", color: colors.blue },
-      { label: "FAILURE", color: colors.red }
+      { label: "SUCESSO", color: colors.blue },
+      { label: "FALHA", color: colors.red }
     ],
     bounds.left,
     120
@@ -257,14 +270,14 @@ function chartWorkflowDuration(runs) {
     rect(image, x, y, barWidth, bounds.bottom - y, color);
     drawText(image, `${value}S`, x + barWidth / 2, y - 28, 3, colors.text, "center");
     drawText(image, run.exp, x + barWidth / 2, bounds.bottom + 18, 3, colors.muted, "center");
-    drawText(image, run.status === "success" ? "OK" : "FAIL", x + barWidth / 2, bounds.bottom + 48, 2, color, "center");
+    drawText(image, run.status === "success" ? "OK" : "FALHA", x + barWidth / 2, bounds.bottom + 48, 2, color, "center");
   });
 
   return image;
 }
 
 function chartJobDuration(rows) {
-  const image = newCanvas("Average duration by job", "Mean job duration across the 12 measured workflow runs");
+  const image = newCanvas("Duração média por job", "Tempo médio de cada job nas 12 execuções medidas");
   const jobs = uniqueJobs(rows);
   const averages = [...new Set(jobs.map((job) => job.job_name))].map((name) => {
     const values = jobs.filter((job) => job.job_name === name).map((job) => Number(job.job_duration));
@@ -279,7 +292,7 @@ function chartJobDuration(rows) {
   const barWidth = Math.min(190, slot * 0.55);
   const palette = [colors.teal, colors.purple, colors.orange];
 
-  drawAxes(image, maxY, "SECONDS", "PIPELINE JOB");
+  drawAxes(image, maxY, "SEGUNDOS", "JOB DO PIPELINE");
 
   averages.forEach((entry, index) => {
     const x = bounds.left + index * slot + slot / 2 - barWidth / 2;
@@ -289,25 +302,25 @@ function chartJobDuration(rows) {
     drawText(image, entry.name.replace(" dependencies", ""), x + barWidth / 2, bounds.bottom + 22, 3, colors.muted, "center");
   });
 
-  drawText(image, "INSTALL IS REPEATED PER JOB TO KEEP JOBS ISOLATED", bounds.left, height - 95, 3, colors.muted);
+  drawText(image, "A INSTALAÇÃO É REPETIDA POR JOB PARA MANTER ISOLAMENTO", bounds.left, height - 95, 3, colors.muted);
   return image;
 }
 
 function chartSuccessFailure(runs) {
-  const image = newCanvas("Workflow status rate", "Successful and failed executions in the controlled experiment");
+  const image = newCanvas("Taxa de sucesso e falha", "Execuções bem-sucedidas e com falha no experimento");
   const success = runs.filter((run) => run.status === "success").length;
   const failure = runs.length - success;
   const total = runs.length;
   const values = [
-    { label: "SUCCESS", value: success, color: colors.green },
-    { label: "FAILURE", value: failure, color: colors.red }
+    { label: "SUCESSO", value: success, color: colors.green },
+    { label: "FALHA", value: failure, color: colors.red }
   ];
   const bounds = chartBounds();
   const maxY = total;
   const slot = bounds.chartWidth / values.length;
   const barWidth = 240;
 
-  drawAxes(image, maxY, "RUNS", "WORKFLOW CONCLUSION");
+  drawAxes(image, maxY, "EXECUÇÕES", "STATUS DO WORKFLOW");
 
   values.forEach((entry, index) => {
     const x = bounds.left + index * slot + slot / 2 - barWidth / 2;
@@ -319,12 +332,12 @@ function chartSuccessFailure(runs) {
     drawText(image, entry.label, x + barWidth / 2, bounds.bottom + 24, 4, colors.muted, "center");
   });
 
-  drawText(image, "FAILURES WERE PLANNED: EXP04 TEST FAILURE AND EXP11 LINT FAILURE", bounds.left, height - 95, 3, colors.muted);
+  drawText(image, "FALHAS PLANEJADAS: EXP04 EM TESTES E EXP11 EM LINT", bounds.left, height - 95, 3, colors.muted);
   return image;
 }
 
 function chartTestsVsDuration(runs) {
-  const image = newCanvas("Test count and workflow duration", "Duration bars and test line by run");
+  const image = newCanvas("Testes executados e duração", "Barras de duração e linha de testes por execução");
   const maxDuration = niceMax(runs.map((run) => Number(run.workflow_duration)));
   const maxTests = niceMax(runs.map((run) => Number(run.test_count)), 20);
   const bounds = chartBounds();
@@ -332,14 +345,14 @@ function chartTestsVsDuration(runs) {
   const barWidth = Math.min(58, slot * 0.5);
   const testPoints = [];
 
-  drawAxes(image, maxDuration, "SECONDS", "EXPERIMENT RUN");
+  drawAxes(image, maxDuration, "SEGUNDOS", "EXECUÇÃO DO EXPERIMENTO");
   line(image, bounds.right, bounds.top, bounds.right, bounds.bottom, colors.axis, 3);
   drawLegend(
     image,
     [
-      { label: "DURATION", color: colors.blue },
-      { label: "TESTS", color: colors.orange },
-      { label: "FAILED RUN", color: colors.red }
+      { label: "DURAÇÃO", color: colors.blue },
+      { label: "TESTES", color: colors.orange },
+      { label: "FALHA", color: colors.red }
     ],
     bounds.left,
     120
@@ -350,7 +363,7 @@ function chartTestsVsDuration(runs) {
     const y = bounds.bottom - (value / maxTests) * bounds.chartHeight;
     drawText(image, String(value), bounds.right + 18, y - 10, 3, colors.orange);
   }
-  drawText(image, "TESTS", bounds.right - 50, bounds.top - 35, 3, colors.orange);
+  drawText(image, "TESTES", bounds.right - 70, bounds.top - 35, 3, colors.orange);
 
   runs.forEach((run, index) => {
     const duration = Number(run.workflow_duration);
@@ -364,7 +377,7 @@ function chartTestsVsDuration(runs) {
     rect(image, barX, barY, barWidth, bounds.bottom - barY, barColor);
     drawText(image, `${duration}S`, centerX, barY - 24, 2, colors.text, "center");
     drawText(image, run.exp, centerX, bounds.bottom + 18, 3, colors.muted, "center");
-    drawText(image, run.status === "success" ? "OK" : "FAIL", centerX, bounds.bottom + 48, 2, barColor, "center");
+    drawText(image, run.status === "success" ? "OK" : "FALHA", centerX, bounds.bottom + 48, 2, barColor, "center");
     testPoints.push({ x: centerX, y: testY, tests: testCount });
   });
 
@@ -377,7 +390,7 @@ function chartTestsVsDuration(runs) {
     drawText(image, `${point.tests}T`, point.x, point.y - 28, 2, colors.orange, "center");
   }
 
-  drawText(image, "EXP11 HAS ZERO TESTS BECAUSE LINT FAILED BEFORE THE TEST JOB", bounds.left, height - 95, 3, colors.muted);
+  drawText(image, "EXP11 TEM ZERO TESTES PORQUE O LINT FALHOU ANTES DO JOB DE TESTES", bounds.left, height - 95, 3, colors.muted);
   return image;
 }
 
