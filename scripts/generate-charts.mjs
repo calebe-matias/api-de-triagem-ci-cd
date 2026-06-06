@@ -1,9 +1,73 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { PNG } from "pngjs";
 
-const width = 1100;
-const height = 700;
-const margin = { top: 60, right: 50, bottom: 120, left: 90 };
+const width = 1400;
+const height = 900;
+const margin = { top: 165, right: 80, bottom: 190, left: 130 };
+const colors = {
+  background: [255, 255, 255, 255],
+  axis: [30, 41, 59, 255],
+  grid: [226, 232, 240, 255],
+  text: [15, 23, 42, 255],
+  muted: [100, 116, 139, 255],
+  blue: [37, 99, 235, 255],
+  teal: [13, 148, 136, 255],
+  green: [22, 163, 74, 255],
+  red: [220, 38, 38, 255],
+  orange: [234, 88, 12, 255],
+  purple: [124, 58, 237, 255]
+};
+
+const font = {
+  " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"],
+  "!": ["00100", "00100", "00100", "00100", "00100", "00000", "00100"],
+  "#": ["01010", "01010", "11111", "01010", "11111", "01010", "01010"],
+  "%": ["11001", "11010", "00100", "01000", "10110", "00110", "00000"],
+  "(": ["00010", "00100", "01000", "01000", "01000", "00100", "00010"],
+  ")": ["01000", "00100", "00010", "00010", "00010", "00100", "01000"],
+  "+": ["00000", "00100", "00100", "11111", "00100", "00100", "00000"],
+  ",": ["00000", "00000", "00000", "00000", "00110", "00100", "01000"],
+  "-": ["00000", "00000", "00000", "11111", "00000", "00000", "00000"],
+  ".": ["00000", "00000", "00000", "00000", "00000", "00110", "00110"],
+  "/": ["00001", "00010", "00100", "01000", "10000", "00000", "00000"],
+  ":": ["00000", "00110", "00110", "00000", "00110", "00110", "00000"],
+  "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+  "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+  "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+  "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+  "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
+  "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+  "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"],
+  "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+  "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
+  "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+  "A": ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+  "B": ["11110", "10001", "10001", "11110", "10001", "10001", "11110"],
+  "C": ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+  "D": ["11110", "10001", "10001", "10001", "10001", "10001", "11110"],
+  "E": ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+  "F": ["11111", "10000", "10000", "11110", "10000", "10000", "10000"],
+  "G": ["01111", "10000", "10000", "10111", "10001", "10001", "01110"],
+  "H": ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+  "I": ["01110", "00100", "00100", "00100", "00100", "00100", "01110"],
+  "J": ["00111", "00010", "00010", "00010", "00010", "10010", "01100"],
+  "K": ["10001", "10010", "10100", "11000", "10100", "10010", "10001"],
+  "L": ["10000", "10000", "10000", "10000", "10000", "10000", "11111"],
+  "M": ["10001", "11011", "10101", "10101", "10001", "10001", "10001"],
+  "N": ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+  "O": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
+  "P": ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+  "Q": ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
+  "R": ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+  "S": ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+  "T": ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+  "U": ["10001", "10001", "10001", "10001", "10001", "10001", "01110"],
+  "V": ["10001", "10001", "10001", "10001", "10001", "01010", "00100"],
+  "W": ["10001", "10001", "10001", "10101", "10101", "10101", "01010"],
+  "X": ["10001", "10001", "01010", "00100", "01010", "10001", "10001"],
+  "Y": ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
+  "Z": ["11111", "00001", "00010", "00100", "01000", "10000", "11111"]
+};
 
 function readMetrics() {
   if (!existsSync("metrics/runs.json")) {
@@ -18,11 +82,27 @@ function uniqueRuns(rows) {
 
   for (const row of rows) {
     if (!runs.has(row.run_id)) {
-      runs.set(row.run_id, row);
+      runs.set(row.run_id, {
+        ...row,
+        exp: row.commit_message.split(":")[0].toUpperCase()
+      });
     }
   }
 
   return [...runs.values()];
+}
+
+function uniqueJobs(rows) {
+  const jobs = new Map();
+
+  for (const row of rows) {
+    const key = `${row.run_id}|${row.job_name}`;
+    if (!jobs.has(key)) {
+      jobs.set(key, row);
+    }
+  }
+
+  return [...jobs.values()];
 }
 
 function setPixel(image, x, y, color) {
@@ -45,14 +125,14 @@ function rect(image, x, y, w, h, color) {
   }
 }
 
-function line(image, x0, y0, x1, y1, color) {
+function line(image, x0, y0, x1, y1, color, thickness = 2) {
   const steps = Math.max(Math.abs(Math.round(x1 - x0)), Math.abs(Math.round(y1 - y0)), 1);
 
   for (let step = 0; step <= steps; step += 1) {
     const ratio = step / steps;
     const x = x0 + (x1 - x0) * ratio;
     const y = y0 + (y1 - y0) * ratio;
-    rect(image, x - 1, y - 1, 3, 3, color);
+    rect(image, x - thickness / 2, y - thickness / 2, thickness, thickness, color);
   }
 }
 
@@ -66,11 +146,36 @@ function circle(image, cx, cy, radius, color) {
   }
 }
 
-function newCanvas() {
+function textWidth(text, size = 3) {
+  return text.toUpperCase().length * 6 * size;
+}
+
+function drawText(image, text, x, y, size = 3, color = colors.text, align = "left") {
+  const normalized = text.toUpperCase();
+  let cursorX = align === "center" ? x - textWidth(normalized, size) / 2 : x;
+
+  if (align === "right") {
+    cursorX = x - textWidth(normalized, size);
+  }
+
+  for (const char of normalized) {
+    const glyph = font[char] ?? font[" "];
+    glyph.forEach((row, rowIndex) => {
+      [...row].forEach((pixel, colIndex) => {
+        if (pixel === "1") {
+          rect(image, cursorX + colIndex * size, y + rowIndex * size, size, size, color);
+        }
+      });
+    });
+    cursorX += 6 * size;
+  }
+}
+
+function newCanvas(title, subtitle) {
   const image = new PNG({ width, height });
-  rect(image, 0, 0, width, height, [255, 255, 255, 255]);
-  rect(image, margin.left, margin.top, 2, height - margin.top - margin.bottom, [40, 48, 60, 255]);
-  rect(image, margin.left, height - margin.bottom, width - margin.left - margin.right, 2, [40, 48, 60, 255]);
+  rect(image, 0, 0, width, height, colors.background);
+  drawText(image, title, margin.left, 34, 5, colors.text);
+  drawText(image, subtitle, margin.left, 82, 3, colors.muted);
   return image;
 }
 
@@ -79,86 +184,200 @@ function save(image, path) {
   console.log(`Wrote ${path}`);
 }
 
-function scaleY(value, max) {
-  const chartHeight = height - margin.top - margin.bottom;
-  return height - margin.bottom - (value / Math.max(max, 1)) * chartHeight;
+function chartBounds() {
+  return {
+    left: margin.left,
+    right: width - margin.right,
+    top: margin.top,
+    bottom: height - margin.bottom,
+    chartWidth: width - margin.left - margin.right,
+    chartHeight: height - margin.top - margin.bottom
+  };
+}
+
+function yScale(value, max) {
+  const bounds = chartBounds();
+  return bounds.bottom - (value / Math.max(max, 1)) * bounds.chartHeight;
+}
+
+function drawAxes(image, maxY, yLabel, xLabel) {
+  const bounds = chartBounds();
+  line(image, bounds.left, bounds.top, bounds.left, bounds.bottom, colors.axis, 3);
+  line(image, bounds.left, bounds.bottom, bounds.right, bounds.bottom, colors.axis, 3);
+
+  for (let index = 0; index <= 5; index += 1) {
+    const value = Math.round((maxY / 5) * index);
+    const y = yScale(value, maxY);
+    line(image, bounds.left, y, bounds.right, y, colors.grid, 1);
+    drawText(image, String(value), bounds.left - 18, y - 10, 3, colors.muted, "right");
+  }
+
+  drawText(image, yLabel, 28, bounds.top + 170, 3, colors.muted);
+  drawText(image, xLabel, bounds.left + bounds.chartWidth / 2, height - 55, 3, colors.muted, "center");
+}
+
+function drawLegend(image, entries, x, y) {
+  let cursorX = x;
+
+  for (const entry of entries) {
+    rect(image, cursorX, y + 4, 18, 18, entry.color);
+    drawText(image, entry.label, cursorX + 28, y, 3, colors.muted);
+    cursorX += 28 + textWidth(entry.label, 3) + 30;
+  }
+}
+
+function niceMax(values, minMax = 10) {
+  const max = Math.max(...values, minMax);
+  return Math.ceil((max * 1.12) / 10) * 10;
 }
 
 function chartWorkflowDuration(runs) {
-  const image = newCanvas();
-  const max = Math.max(...runs.map((run) => Number(run.workflow_duration)), 1);
-  const chartWidth = width - margin.left - margin.right;
-  const step = chartWidth / Math.max(runs.length - 1, 1);
-  const points = runs.map((run, index) => ({
-    x: margin.left + index * step,
-    y: scaleY(Number(run.workflow_duration), max)
-  }));
+  const image = newCanvas("Workflow duration by run", "Total GitHub Actions time in seconds for each experiment run");
+  const maxY = niceMax(runs.map((run) => Number(run.workflow_duration)));
+  const bounds = chartBounds();
+  const slot = bounds.chartWidth / runs.length;
+  const barWidth = Math.min(62, slot * 0.58);
 
-  for (let index = 1; index < points.length; index += 1) {
-    line(image, points[index - 1].x, points[index - 1].y, points[index].x, points[index].y, [36, 99, 235, 255]);
-  }
+  drawAxes(image, maxY, "SECONDS", "EXPERIMENT RUN");
+  drawLegend(
+    image,
+    [
+      { label: "SUCCESS", color: colors.blue },
+      { label: "FAILURE", color: colors.red }
+    ],
+    bounds.left,
+    120
+  );
 
-  for (const point of points) {
-    circle(image, point.x, point.y, 6, [20, 70, 180, 255]);
-  }
-
-  return image;
-}
-
-function chartJobDuration(rows) {
-  const image = newCanvas();
-  const jobs = new Map();
-
-  for (const row of rows) {
-    const current = jobs.get(row.job_name) ?? [];
-    current.push(Number(row.job_duration));
-    jobs.set(row.job_name, current);
-  }
-
-  const averages = [...jobs.entries()].map(([job, values]) => ({
-    job,
-    value: values.reduce((total, value) => total + value, 0) / values.length
-  }));
-  const max = Math.max(...averages.map((entry) => entry.value), 1);
-  const chartWidth = width - margin.left - margin.right;
-  const barWidth = chartWidth / Math.max(averages.length, 1) - 30;
-
-  averages.forEach((entry, index) => {
-    const x = margin.left + 20 + index * (barWidth + 30);
-    const y = scaleY(entry.value, max);
-    rect(image, x, y, barWidth, height - margin.bottom - y, [38, 166, 154, 255]);
+  runs.forEach((run, index) => {
+    const value = Number(run.workflow_duration);
+    const x = bounds.left + index * slot + slot / 2 - barWidth / 2;
+    const y = yScale(value, maxY);
+    const color = run.status === "success" ? colors.blue : colors.red;
+    rect(image, x, y, barWidth, bounds.bottom - y, color);
+    drawText(image, `${value}S`, x + barWidth / 2, y - 28, 3, colors.text, "center");
+    drawText(image, run.exp, x + barWidth / 2, bounds.bottom + 18, 3, colors.muted, "center");
+    drawText(image, run.status === "success" ? "OK" : "FAIL", x + barWidth / 2, bounds.bottom + 48, 2, color, "center");
   });
 
   return image;
 }
 
+function chartJobDuration(rows) {
+  const image = newCanvas("Average duration by job", "Mean job duration across the 12 measured workflow runs");
+  const jobs = uniqueJobs(rows);
+  const averages = [...new Set(jobs.map((job) => job.job_name))].map((name) => {
+    const values = jobs.filter((job) => job.job_name === name).map((job) => Number(job.job_duration));
+    return {
+      name,
+      value: values.reduce((total, value) => total + value, 0) / values.length
+    };
+  });
+  const maxY = niceMax(averages.map((entry) => entry.value));
+  const bounds = chartBounds();
+  const slot = bounds.chartWidth / averages.length;
+  const barWidth = Math.min(190, slot * 0.55);
+  const palette = [colors.teal, colors.purple, colors.orange];
+
+  drawAxes(image, maxY, "SECONDS", "PIPELINE JOB");
+
+  averages.forEach((entry, index) => {
+    const x = bounds.left + index * slot + slot / 2 - barWidth / 2;
+    const y = yScale(entry.value, maxY);
+    rect(image, x, y, barWidth, bounds.bottom - y, palette[index % palette.length]);
+    drawText(image, `${entry.value.toFixed(1)}S`, x + barWidth / 2, y - 32, 4, colors.text, "center");
+    drawText(image, entry.name.replace(" dependencies", ""), x + barWidth / 2, bounds.bottom + 22, 3, colors.muted, "center");
+  });
+
+  drawText(image, "INSTALL IS REPEATED PER JOB TO KEEP JOBS ISOLATED", bounds.left, height - 95, 3, colors.muted);
+  return image;
+}
+
 function chartSuccessFailure(runs) {
-  const image = newCanvas();
+  const image = newCanvas("Workflow status rate", "Successful and failed executions in the controlled experiment");
   const success = runs.filter((run) => run.status === "success").length;
   const failure = runs.length - success;
-  const total = Math.max(runs.length, 1);
-  const successHeight = ((height - margin.top - margin.bottom) * success) / total;
-  const failureHeight = ((height - margin.top - margin.bottom) * failure) / total;
+  const total = runs.length;
+  const values = [
+    { label: "SUCCESS", value: success, color: colors.green },
+    { label: "FAILURE", value: failure, color: colors.red }
+  ];
+  const bounds = chartBounds();
+  const maxY = total;
+  const slot = bounds.chartWidth / values.length;
+  const barWidth = 240;
 
-  rect(image, margin.left + 180, height - margin.bottom - successHeight, 180, successHeight, [48, 160, 88, 255]);
-  rect(image, margin.left + 500, height - margin.bottom - failureHeight, 180, failureHeight, [215, 72, 72, 255]);
+  drawAxes(image, maxY, "RUNS", "WORKFLOW CONCLUSION");
+
+  values.forEach((entry, index) => {
+    const x = bounds.left + index * slot + slot / 2 - barWidth / 2;
+    const y = yScale(entry.value, maxY);
+    const percentage = Math.round((entry.value / total) * 100);
+    rect(image, x, y, barWidth, bounds.bottom - y, entry.color);
+    drawText(image, `${entry.value}/${total}`, x + barWidth / 2, y - 68, 5, colors.text, "center");
+    drawText(image, `${percentage}%`, x + barWidth / 2, y - 24, 3, colors.muted, "center");
+    drawText(image, entry.label, x + barWidth / 2, bounds.bottom + 24, 4, colors.muted, "center");
+  });
+
+  drawText(image, "FAILURES WERE PLANNED: EXP04 TEST FAILURE AND EXP11 LINT FAILURE", bounds.left, height - 95, 3, colors.muted);
   return image;
 }
 
 function chartTestsVsDuration(runs) {
-  const image = newCanvas();
-  const maxTests = Math.max(...runs.map((run) => Number(run.test_count)), 1);
-  const maxDuration = Math.max(...runs.map((run) => Number(run.workflow_duration)), 1);
-  const chartWidth = width - margin.left - margin.right;
-  const chartHeight = height - margin.top - margin.bottom;
+  const image = newCanvas("Test count and workflow duration", "Duration bars and test line by run");
+  const maxDuration = niceMax(runs.map((run) => Number(run.workflow_duration)));
+  const maxTests = niceMax(runs.map((run) => Number(run.test_count)), 20);
+  const bounds = chartBounds();
+  const slot = bounds.chartWidth / runs.length;
+  const barWidth = Math.min(58, slot * 0.5);
+  const testPoints = [];
 
-  for (const run of runs) {
-    const x = margin.left + (Number(run.test_count) / maxTests) * chartWidth;
-    const y = height - margin.bottom - (Number(run.workflow_duration) / maxDuration) * chartHeight;
-    const color = run.status === "success" ? [36, 99, 235, 255] : [215, 72, 72, 255];
-    circle(image, x, y, 7, color);
+  drawAxes(image, maxDuration, "SECONDS", "EXPERIMENT RUN");
+  line(image, bounds.right, bounds.top, bounds.right, bounds.bottom, colors.axis, 3);
+  drawLegend(
+    image,
+    [
+      { label: "DURATION", color: colors.blue },
+      { label: "TESTS", color: colors.orange },
+      { label: "FAILED RUN", color: colors.red }
+    ],
+    bounds.left,
+    120
+  );
+
+  for (let index = 0; index <= 5; index += 1) {
+    const value = Math.round((maxTests / 5) * index);
+    const y = bounds.bottom - (value / maxTests) * bounds.chartHeight;
+    drawText(image, String(value), bounds.right + 18, y - 10, 3, colors.orange);
+  }
+  drawText(image, "TESTS", bounds.right - 50, bounds.top - 35, 3, colors.orange);
+
+  runs.forEach((run, index) => {
+    const duration = Number(run.workflow_duration);
+    const testCount = Number(run.test_count);
+    const centerX = bounds.left + index * slot + slot / 2;
+    const barX = centerX - barWidth / 2;
+    const barY = yScale(duration, maxDuration);
+    const barColor = run.status === "success" ? colors.blue : colors.red;
+    const testY = bounds.bottom - (testCount / maxTests) * bounds.chartHeight;
+
+    rect(image, barX, barY, barWidth, bounds.bottom - barY, barColor);
+    drawText(image, `${duration}S`, centerX, barY - 24, 2, colors.text, "center");
+    drawText(image, run.exp, centerX, bounds.bottom + 18, 3, colors.muted, "center");
+    drawText(image, run.status === "success" ? "OK" : "FAIL", centerX, bounds.bottom + 48, 2, barColor, "center");
+    testPoints.push({ x: centerX, y: testY, tests: testCount });
+  });
+
+  for (let index = 1; index < testPoints.length; index += 1) {
+    line(image, testPoints[index - 1].x, testPoints[index - 1].y, testPoints[index].x, testPoints[index].y, colors.orange, 4);
   }
 
+  for (const point of testPoints) {
+    circle(image, point.x, point.y, 8, colors.orange);
+    drawText(image, `${point.tests}T`, point.x, point.y - 28, 2, colors.orange, "center");
+  }
+
+  drawText(image, "EXP11 HAS ZERO TESTS BECAUSE LINT FAILED BEFORE THE TEST JOB", bounds.left, height - 95, 3, colors.muted);
   return image;
 }
 
