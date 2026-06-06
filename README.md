@@ -1,6 +1,6 @@
 # API de Triagem CI CD
 
-API de triagem e acompanhamento de atendimentos criada para um experimento de métricas de CI/CD no GitHub Actions.
+Desde o começo da faculdade, estive envolvido em iniciativas de empreendedorismo que foram responsáveis por grande parte do conhecimento técnico que tenho hoje. Dentre os projetos que desenvolvi estão a [Anamnai](app.anamnai.com), software de transcrição médica e o [RiskClassifier](app.anamnai.com/cross), sistema de priorização de riscos considerando protocolos do Sistema CROSS. Para esta ponderada, criei uma API simples de triagem e acompanhamento de atendimentos, inspirada no fluxo de atendimento do CROSS, para conseguir extrair as métricas de CI/CD da ponderada.
 
 O projeto simula um fluxo simples de atendimento:
 
@@ -10,17 +10,9 @@ O projeto simula um fluxo simples de atendimento:
 - abertura de tickets de acompanhamento;
 - consulta de timeline do paciente.
 
-## Stack
+## Como reproduzir o experimento:
 
-- Node.js 20+
-- Fastify
-- TypeScript
-- Vitest
-- ESLint
-
-## Como avaliar o funcionamento do código
-
-Qualquer avaliador pode clonar o repositório e executar os checks locais sem autenticar a CLI do GitHub:
+Basta executar os checks locais:
 
 ```bash
 npm ci
@@ -29,7 +21,7 @@ npm run typecheck
 npm run test:ci
 ```
 
-Esses comandos validam a qualidade do código, a tipagem TypeScript e a suíte automatizada. No estado final do experimento, a suíte executa 160 testes.
+Esses comandos validam a qualidade do código, a tipagem TypeScript e a suíte automatizada. No estado final da ponderada, a suíte executa 160 testes.
 
 ## Como executar a API localmente
 
@@ -44,7 +36,7 @@ Depois, acesse:
 curl http://localhost:3000/health
 ```
 
-Exemplo de fluxo minimo:
+Exemplo de chamada:
 
 ```bash
 curl -X POST http://localhost:3000/patients \
@@ -56,7 +48,7 @@ curl -X POST http://localhost:3000/patients \
 
 O pipeline principal já está configurado em `.github/workflows/ci.yml` e roda automaticamente em `push` e `pull_request`.
 
-Para avaliar que o pipeline funciona, não é necessário repetir os 12 commits do experimento. Basta abrir a aba **Actions** do repositório e verificar as execuções existentes, ou criar um pull request/commit próprio em um fork para disparar uma nova execução.
+Para avaliar que o pipeline funciona, basta abrir a aba **Actions** do repositório e verificar as execuções existentes, ou criar um pull request/commit próprio em um fork para disparar uma nova execução.
 
 Workflow:
 
@@ -70,17 +62,17 @@ Workflow:
 
 As 12 execuções reais usadas no relatório já foram coletadas e versionadas:
 
-- log das variações: `docs/experiment-log.md`;
-- relatório técnico: `docs/report.md`;
-- base CSV: `metrics/runs.csv`;
-- base JSON: `metrics/runs.json`;
-- gráficos: `reports/charts/`.
+- log das variações: [`docs/experiment-log.md`](docs/experiment-log.md);
+- relatório técnico: [`docs/report.md`](docs/report.md);
+- base CSV: [`metrics/runs.csv`](metrics/runs.csv);
+- base JSON: [`metrics/runs.json`](metrics/runs.json);
+- gráficos: [`reports/charts/`](reports/charts/).
 
-Os commits `exp01` a `exp12` e seus respectivos IDs de workflow estão documentados em `docs/experiment-log.md`.
+Os commits `exp01` a `exp12` e seus respectivos IDs de workflow estão documentados em [`docs/experiment-log.md`](docs/experiment-log.md).
 
-## Como regenerar os gráficos a partir dos dados versionados
+## Como regerar os gráficos a partir dos dados versionados
 
-Não é preciso autenticar no GitHub para regenerar os gráficos já entregues:
+Não é preciso autenticar no GitHub para regerar os gráficos já entregues:
 
 ```bash
 npm ci
