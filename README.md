@@ -1,6 +1,6 @@
 # API de Triagem CI CD
 
-Desde o começo da faculdade, estive envolvido em iniciativas de empreendedorismo que foram responsáveis por grande parte do conhecimento técnico que tenho hoje. Dentre os projetos que desenvolvi estão a [Anamnai](app.anamnai.com), software de transcrição médica e o [RiskClassifier](app.anamnai.com/cross), sistema de priorização de riscos considerando protocolos do Sistema CROSS. Para esta ponderada, criei uma API simples de triagem e acompanhamento de atendimentos, inspirada no fluxo de atendimento do CROSS, para conseguir extrair as métricas de CI/CD da ponderada.
+Desde o começo da faculdade, estive envolvido em iniciativas de empreendedorismo que foram responsáveis por grande parte do conhecimento técnico que tenho hoje. Dentre os projetos que desenvolvi estão a [Anamnai](https://app.anamnai.com), software de transcrição médica e o [RiskClassifier](https://app.anamnai.com/cross), sistema de priorização de riscos considerando protocolos do Sistema CROSS. Para esta ponderada, criei uma API simples de triagem e acompanhamento de atendimentos, inspirada no fluxo de atendimento do CROSS, para conseguir extrair as métricas de CI/CD da ponderada.
 
 O projeto simula um fluxo simples de atendimento:
 
